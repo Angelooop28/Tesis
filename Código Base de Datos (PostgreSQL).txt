@@ -1,0 +1,84 @@
+Código Base de Datos (PostgreSQL)
+
+-- Crear la tabla Usuario
+CREATE TABLE Usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    nombre VARCHAR(40) NOT NULL,
+    email VARCHAR(60) NOT NULL UNIQUE,
+    contraseña VARCHAR(20) NOT NULL,
+    rol VARCHAR(40) NOT NULL
+);
+
+-- Crear la tabla Estudiante
+CREATE TABLE Estudiante (
+    id_estudiante SERIAL PRIMARY KEY,
+    grado_actual INTEGER NOT NULL,
+    celular_representante INTEGER
+);
+
+-- Crear la tabla Docente
+CREATE TABLE Docente (
+    id_docente SERIAL PRIMARY KEY,
+    especialidad VARCHAR(40) NOT NULL
+);
+
+-- Crear la tabla Curso
+CREATE TABLE Curso (
+    id_curso SERIAL PRIMARY KEY,
+    nombre VARCHAR(40) NOT NULL,
+    descripcion VARCHAR(60)
+);
+
+-- Crear la tabla Matricula (relación entre Estudiante y Curso)
+CREATE TABLE Matricula (
+    id_matricula SERIAL PRIMARY KEY,
+    id_estudiante INTEGER NOT NULL,
+    id_curso INTEGER NOT NULL,
+    fecha_matricula DATE NOT NULL,
+    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante),
+    FOREIGN KEY (id_curso) REFERENCES Curso(id_curso)
+);
+
+-- Crear la tabla Asignatura
+CREATE TABLE Asignatura (
+    id_asignatura SERIAL PRIMARY KEY,
+    nombre VARCHAR(40) NOT NULL,
+    descripcion VARCHAR(60)
+);
+
+-- Crear la tabla Tarea
+CREATE TABLE Tarea (
+    id_tarea SERIAL PRIMARY KEY,
+    id_asignatura INTEGER NOT NULL,
+    titulo VARCHAR(40) NOT NULL,
+    descripcion VARCHAR(60),
+    fecha_entrega DATE NOT NULL,
+    FOREIGN KEY (id_asignatura) REFERENCES Asignatura(id_asignatura)
+);
+
+-- Crear la tabla Asistencia
+CREATE TABLE Asistencia (
+    id_asistencia SERIAL PRIMARY KEY,
+    id_estudiante INTEGER NOT NULL,
+    fecha DATE NOT NULL,
+    estado VARCHAR(40) NOT NULL,
+    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante)
+);
+
+-- Crear la tabla Calificacion
+CREATE TABLE Calificacion (
+    id_calificacion SERIAL PRIMARY KEY,
+    id_estudiante INTEGER NOT NULL,
+    id_asignatura INTEGER NOT NULL,
+    nota VARCHAR(10) NOT NULL,
+    fecha DATE NOT NULL,
+    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante),
+    FOREIGN KEY (id_asignatura) REFERENCES Asignatura(id_asignatura)
+);
+
+-- Crear la tabla Chatbot
+CREATE TABLE Chatbot (
+    id_chatbot SERIAL PRIMARY KEY,
+    pregunta VARCHAR(50) NOT NULL,
+    respuesta VARCHAR(80) NOT NULL
+);
