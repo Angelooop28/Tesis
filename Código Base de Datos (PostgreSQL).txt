@@ -1,13 +1,16 @@
 Código Base de Datos (PostgreSQL)
 
--- Crear la tabla Usuario
-CREATE TABLE Usuario (
+-- Crear la tabla usuario
+CREATE TABLE usuario (
     id_usuario SERIAL PRIMARY KEY,
     nombre VARCHAR(40) NOT NULL,
-    email VARCHAR(60) NOT NULL UNIQUE,
-    contraseña VARCHAR(20) NOT NULL,
-    rol VARCHAR(40) NOT NULL
+    email VARCHAR(60) NOT NULL,
+    password VARCHAR(100) NOT NULL, -- Hash de la contraseña
+    rol VARCHAR(40) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación
+    CONSTRAINT unique_email UNIQUE (email) -- Índice único para el correo
 );
+
 
 -- Crear la tabla Estudiante
 CREATE TABLE Estudiante (
