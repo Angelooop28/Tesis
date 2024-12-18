@@ -1,34 +1,20 @@
 <template>
-    <form @submit.prevent="subirTarea">
-      <h2>Subir Tarea</h2>
-      <input v-model="titulo" type="text" placeholder="Título" />
-      <textarea v-model="descripcion" placeholder="Descripción"></textarea>
-      <button type="submit">Subir</button>
-    </form>
+    <div>
+      <h1>Subir Tarea</h1>
+      <input type="file" @change="handleFileUpload" />
+      <button @click="enviarTarea">Subir</button>
+    </div>
   </template>
   
   <script>
-  import axios from 'axios';
-  
   export default {
-    data() {
-      return {
-        titulo: '',
-        descripcion: '',
-      };
-    },
+    name: "SubirTareaComponent",
     methods: {
-      async subirTarea() {
-        try {
-          await axios.post(
-            'http://localhost:5000/tareas',
-            { titulo: this.titulo, descripcion: this.descripcion },
-            { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-          );
-          alert('Tarea subida exitosamente');
-        } catch (error) {
-          alert('Error al subir tarea');
-        }
+      handleFileUpload(event) {
+        console.log(event.target.files[0]);
+      },
+      enviarTarea() {
+        alert("Tarea subida con éxito");
       },
     },
   };

@@ -1,3 +1,4 @@
+
 <template>
   <div class="register-container">
     <div class="register-card">

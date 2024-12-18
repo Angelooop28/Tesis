@@ -2,5 +2,11 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 
+// Creación de la aplicación con router
+const app = createApp(App);
 
-createApp(App).use(router).mount('#app');
+// Configuración del router
+app.use(router);
+
+// Montar la aplicación en el elemento con id #app
+app.mount('#app');

@@ -1,26 +1,58 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../components/HomeComponent.vue";
-import Login from "../components/LoginComponent.vue";
-import Register from "../components/RegisterComponent.vue";
-import Dashboard from "../components/DashboardComponent.vue";
-import Calificaciones from "../components/CalificacionesComponent.vue";
-import Tareas from "../components/TareasComponent.vue";
-import SubirTarea from "../components/SubirTareaComponent.vue";
-import Chatbot from "../components/ChatbotComponent.vue";
-import Contact from "../components/ContactComponent.vue";
-import About from "../components/AboutComponent.vue";
+import HomeComponent from "../components/HomeComponent.vue";
+import LoginComponent from "../components/LoginComponent.vue";
+import RegisterComponent from "../components/RegisterComponent.vue";
+import DashboardEstudiantes from "../components/DashboardEstudiantes.vue";
+import DashboardDocentes from "../components/DashboardDocentes.vue";
+import CalificacionesComponent from "../components/CalificacionesComponent.vue";
+import TareasComponent from "../components/TareasComponent.vue";
+import SubirTareaComponent from "../components/SubirTareaComponent.vue";
+import ChatbotComponent from "../components/ChatbotComponent.vue";
+import ContactComponent from "../components/ContactComponent.vue";
+import CursosComponent from "../components/CursosComponent.vue";
+import CursoDetalleComponent from "../components/CursoDetalleComponent.vue";
 
 const routes = [
-  { path: "/", component: Home },
-  { path: "/login", component: Login },
-  { path: "/register", component: Register },
-  { path: "/dashboard", component: Dashboard, meta: { requiresAuth: true } },
-  { path: "/calificaciones", component: Calificaciones, meta: { requiresAuth: true } },
-  { path: "/tareas", component: Tareas, meta: { requiresAuth: true } },
-  { path: "/subir-tarea", component: SubirTarea, meta: { requiresAuth: true } },
-  { path: "/chatbot", component: Chatbot, meta: { requiresAuth: true } },
-  { path: "/contact", component: Contact },
-  { path: "/about", component: About },
+  { path: "/", component: HomeComponent },
+  { path: "/login", component: LoginComponent },
+  { path: "/register", component: RegisterComponent },
+  {
+    path: "/dashboard-estudiantes",
+    component: DashboardEstudiantes,
+    meta: { requiresAuth: true, rol: "estudiante" },
+  },
+  {
+    path: "/dashboard-docentes",
+    component: DashboardDocentes,
+    meta: { requiresAuth: true, rol: "docente" },
+  },
+  {
+    path: "/calificaciones",
+    component: CalificacionesComponent,
+    meta: { requiresAuth: true, rol: "estudiante" },
+  },
+  {
+    path: "/tareas",
+    component: TareasComponent,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/subir-tarea",
+    component: SubirTareaComponent,
+    meta: { requiresAuth: true, rol: "docente" },
+  },
+  { path: "/chatbot", component: ChatbotComponent },
+  { path: "/contact", component: ContactComponent },
+  {
+    path: "/cursos",
+    component: CursosComponent,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cursos/:id",
+    component: CursoDetalleComponent,
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
@@ -28,13 +60,18 @@ const router = createRouter({
   routes,
 });
 
-// Middleware para proteger rutas
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
+  const rol = localStorage.getItem("rol");
 
-  if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
-    alert("Debes iniciar sesión para acceder a esta página");
-    next("/login");
+  if (to.meta.requiresAuth) {
+    if (!token) {
+      next("/login");
+    } else if (to.meta.rol && to.meta.rol !== rol) {
+      next("/");
+    } else {
+      next();
+    }
   } else {
     next();
   }

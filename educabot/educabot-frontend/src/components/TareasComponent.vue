@@ -1,33 +1,45 @@
 <template>
-    <div>
-      <h2>Tareas</h2>
+    <div class="tareas-container">
+      <h1>Tareas Pendientes</h1>
       <ul>
         <li v-for="tarea in tareas" :key="tarea.id">
-          {{ tarea.titulo }} - {{ tarea.descripcion }}
+          {{ tarea.titulo }} - Vence el {{ tarea.fecha_vencimiento }}
+          <button @click="verDetalle(tarea.id)">Ver Detalle</button>
         </li>
       </ul>
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
-  
   export default {
+    name: "TareasComponent",
     data() {
       return {
         tareas: [],
       };
     },
-    async created() {
-      try {
-        const response = await axios.get('http://localhost:5000/tareas', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    methods: {
+      async fetchTareas() {
+        const token = localStorage.getItem("token");
+        const response = await fetch("/api/tareas", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        this.tareas = response.data;
-      } catch (error) {
-        alert('Error al cargar tareas');
-      }
+        this.tareas = await response.json();
+      },
+      verDetalle(id) {
+        this.$router.push(`/tarea/${id}`);
+      },
+    },
+    mounted() {
+      this.fetchTareas();
     },
   };
   </script>
+  
+  <style scoped>
+  button {
+    margin-left: 10px;
+    padding: 5px 10px;
+  }
+  </style>
   

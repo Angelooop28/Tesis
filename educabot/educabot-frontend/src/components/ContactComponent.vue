@@ -1,7 +1,7 @@
 <template>
-    <div class="contact-container">
-      <h2>Contacto</h2>
-      <p>Si tienes preguntas o sugerencias, contáctanos en <strong>educabot@example.com</strong>.</p>
+    <div>
+      <h1>Contacto</h1>
+      <p>Información de contacto y soporte.</p>
     </div>
   </template>
   
@@ -10,11 +10,4 @@
     name: "ContactComponent",
   };
   </script>
-  
-  <style scoped>
-  .contact-container {
-    text-align: center;
-    padding: 20px;
-  }
-  </style>
   

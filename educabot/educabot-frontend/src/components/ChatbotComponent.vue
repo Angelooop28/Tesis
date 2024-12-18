@@ -1,30 +1,17 @@
 <template>
     <div>
-      <h2>Chatbot</h2>
-      <textarea v-model="pregunta" placeholder="Escribe tu pregunta"></textarea>
-      <button @click="enviarPregunta">Enviar</button>
-      <p>{{ respuesta }}</p>
+      <h1>Chatbot</h1>
+      <textarea placeholder="Escribe tu duda..."></textarea>
+      <button @click="enviarMensaje">Enviar</button>
     </div>
   </template>
   
   <script>
-  import axios from 'axios';
-  
   export default {
-    data() {
-      return {
-        pregunta: '',
-        respuesta: '',
-      };
-    },
+    name: "ChatbotComponent",
     methods: {
-      async enviarPregunta() {
-        try {
-          const response = await axios.post('http://localhost:5000/chatbot', { pregunta: this.pregunta });
-          this.respuesta = response.data.respuesta;
-        } catch (error) {
-          alert('Error al obtener respuesta del chatbot');
-        }
+      enviarMensaje() {
+        alert("Mensaje enviado al chatbot");
       },
     },
   };
