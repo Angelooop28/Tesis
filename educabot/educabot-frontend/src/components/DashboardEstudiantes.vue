@@ -109,10 +109,35 @@ export default {
       const token = localStorage.getItem("token");
       const headers = { Authorization: `Bearer ${token}` };
 
+<<<<<<< HEAD:educabot/educabot-frontend/src/components/estudiante/DashboardEstudiantes.vue
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/dashboard", { headers });
+        const data = await response.json();
+
+        this.materias = data.materias || [];
+        this.tareas = data.tareas || [];
+        this.calificaciones = data.calificaciones || [];
+
+        if (Array.isArray(data.asistencias)) {
+          let total = 0;
+          let asistencias = 0;
+          data.asistencias.forEach((a) => {
+            asistencias += a.asistencias || 0;
+            total += a.total || 0;
+          });
+          this.asistencia = { asistencias, total };
+        } else {
+          this.asistencia = data.asistencias || { asistencias: 0, total: 0 };
+        }
+      } catch (error) {
+        console.error("Error al cargar el dashboard:", error);
+      }
+=======
       this.tareas = await fetch("/api/tareas", { headers }).then((res) => res.json());
       this.asistencia = await fetch("/api/asistencia", { headers }).then((res) => res.json());
       this.calificaciones = await fetch("/api/calificaciones", { headers }).then((res) => res.json());
       this.materias = await fetch("/api/materias", { headers }).then((res) => res.json());
+>>>>>>> parent of 9dbd3cc (avance 4):educabot/educabot-frontend/src/components/DashboardEstudiantes.vue
     },
     subirArchivo(event) {
       this.archivo = event.target.files[0];
@@ -128,7 +153,7 @@ export default {
       formData.append("materia", this.materiaSeleccionada);
 
       const token = localStorage.getItem("token");
-      await fetch("/api/subir-tarea", {
+      await fetch("http://127.0.0.1:5000/api/subir-tarea", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

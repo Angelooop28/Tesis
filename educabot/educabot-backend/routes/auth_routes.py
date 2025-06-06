@@ -1,28 +1,4 @@
 import os
-
-class Config:
-    # Configuración de la base de datos
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:admin2024@localhost:5432/bd_educabot'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
-    # Configuración de JWT
-    JWT_SECRET_KEY = 'clave_secreta'
-    
-    # Configuración de CORS
-    CORS_ORIGINS = 'http://localhost:8080'
-
-    # Configuración de carpetas de subida
-    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
-    ASISTENCIA_FOLDER = os.path.join(UPLOAD_FOLDER, 'asistencia')
-    TAREAS_FOLDER = os.path.join(UPLOAD_FOLDER, 'tareas')
-    TEMP_FOLDER = os.path.join(UPLOAD_FOLDER, 'temp')
-
-    # Asegurarse de que las carpetas existan
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    os.makedirs(ASISTENCIA_FOLDER, exist_ok=True)
-    os.makedirs(TAREAS_FOLDER, exist_ok=True)
-    os.makedirs(TEMP_FOLDER, exist_ok=True)
-
 from flask import Blueprint, request, jsonify
 from extensions.extensions import db, bcrypt
 from models.usuario import Usuario
@@ -32,9 +8,19 @@ from marshmallow import ValidationError
 
 auth_bp = Blueprint('auth_bp', __name__)
 
-# RUTA: Registrar usuario
-@auth_bp.route('/api/auth/register', methods=['POST'])
+<<<<<<< HEAD
+@auth_bp.route('/register', methods=['POST', 'OPTIONS'])
 def register():
+    if request.method == 'OPTIONS':
+        return '', 204
+=======
+# RUTA: Registrar usuario
+@auth_bp.route('/register', methods=['POST', 'OPTIONS'])
+def register():
+    if request.method == 'OPTIONS':
+        return '', 204  # Respuesta vacía para solicitudes OPTIONS
+>>>>>>> parent of 9dbd3cc (avance 4)
+
     try:
         # Capturar datos y validar el esquema
         data = request.get_json()
@@ -50,7 +36,7 @@ def register():
         hashed_password = bcrypt.generate_password_hash(data['password'].strip()).decode('utf-8')
         nuevo_usuario = Usuario(
             nombre=data['nombre'].strip(),
-            email=data['email'].strip(),
+            email=data['email'].strip().lower(),  # Convertir email a minúsculas
             password=hashed_password,
             rol=data['rol'].strip()
         )
@@ -61,20 +47,53 @@ def register():
     except ValidationError as err:
         return jsonify({'mensaje': 'Datos inválidos', 'errores': err.messages}), 400
     except Exception as e:
+        print("🚨 Error en registro:", str(e))
         return jsonify({'mensaje': f'Error en el servidor: {str(e)}'}), 500
 
+<<<<<<< HEAD
+=======
 
 # RUTA: Iniciar sesión
-@auth_bp.route('/api/auth/login', methods=['POST'])
+>>>>>>> parent of 9dbd3cc (avance 4)
+@auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
+    if request.method == 'OPTIONS':
+        return '', 204  # Respuesta vacía para solicitudes OPTIONS
+
     try:
         # Capturar datos y validar el esquema
         data = request.get_json()
         schema = LoginSchema()
         data = schema.load(data)
 
+<<<<<<< HEAD
+        email = data.get("email", "").strip().lower()
+        password = data.get("password", "").strip()
+
+        usuario = Usuario.query.filter_by(email=email).first()
+
+        print("🧪 Buscando usuario con email:", email)
+
+        if not usuario:
+            print("❌ Usuario no encontrado")
+            return jsonify({"mensaje": "Usuario no encontrado"}), 404
+
+        if not usuario.password:
+            print("⚠️ Usuario no tiene contraseña registrada")
+            return jsonify({"mensaje": "Contraseña no configurada"}), 400
+
+        print("🔐 Comparando password...")
+        if bcrypt.check_password_hash(usuario.password, password):
+            print("✅ Contraseña válida. Login exitoso.")
+
+            token_de_acceso = create_access_token(identity={
+                "id_usuario": usuario.id_usuario,
+                "rol": usuario.rol
+            })
+=======
         # Buscar usuario por email
-        usuario = Usuario.query.filter_by(email=data['email'].strip()).first()
+        usuario = Usuario.query.filter_by(email=data['email'].strip().lower()).first()  # Email en minúsculas
+>>>>>>> parent of 9dbd3cc (avance 4)
 
         # Verificar si el usuario existe y la contraseña es correcta
         if not usuario:
@@ -82,10 +101,41 @@ def login():
         
         if bcrypt.check_password_hash(usuario.password, data['password'].strip()):
             access_token = create_access_token(identity={'id_usuario': usuario.id_usuario, 'rol': usuario.rol})
-            return jsonify({'token': access_token, 'usuario': usuario.nombre}), 200
+            return jsonify({
+                'token': access_token,
+                'usuario': usuario.nombre,
+                'rol': usuario.rol  # Rol del usuario
+            }), 200
+<<<<<<< HEAD
+        else:
+            print("❌ Contraseña inválida")
+            return jsonify({"mensaje": "Contraseña incorrecta"}), 401
+
+    except ValidationError as err:
+        return jsonify({'mensaje': 'Datos inválidos', 'errores': err.messages}), 400
+    except Exception as e:
+        print("💥 Error general en login:", str(e))
+        return jsonify({'mensaje': f'Error del servidor: {str(e)}'}), 500
+
+@auth_bp.route('/recuperar', methods=['POST'])
+def recuperar_password():
+    data = request.get_json()
+    email = data.get('email', '').strip()
+
+    if not email:
+        return jsonify({'mensaje': 'Correo requerido'}), 400
+
+    usuario = Usuario.query.filter_by(email=email).first()
+    if not usuario:
+        return jsonify({'mensaje': 'Correo no registrado'}), 404
+
+    print(f"📧 Se simuló el envío del link de recuperación a {email}")
+    return jsonify({'mensaje': 'Se ha enviado un enlace de recuperación a tu correo'}), 200
+=======
         
         return jsonify({'mensaje': 'Contraseña incorrecta'}), 401
     except ValidationError as err:
         return jsonify({'mensaje': 'Datos inválidos', 'errores': err.messages}), 400
     except Exception as e:
         return jsonify({'mensaje': f'Error en el servidor: {str(e)}'}), 500
+>>>>>>> parent of 9dbd3cc (avance 4)

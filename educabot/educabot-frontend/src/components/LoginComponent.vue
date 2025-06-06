@@ -37,25 +37,46 @@ export default {
     return {
       email: "",
       password: "",
+      error: "",
     };
   },
   methods: {
     async login() {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/login", {
+        const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: this.email, password: this.password }),
         });
+
         const data = await response.json();
         if (response.ok) {
-          alert(`Bienvenido, ${data.usuario}`);
-          this.$router.push("/dashboard");
+<<<<<<< HEAD:educabot/educabot-frontend/src/components/auth/RecuperarContrasena.vue
+          this.mensaje = data.mensaje;
+          this.error = "";
+
+          // 🔁 Redirigir a login luego de 4 segundos
+          setTimeout(() => {
+            this.$router.push("/login");
+          }, 4000);
+=======
+          // Guardar token y rol en localStorage
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("rol", data.rol);
+
+          // Redirección según el rol
+          if (data.rol === "estudiante") {
+            this.$router.push("/dashboard-estudiantes");
+          } else if (data.rol === "docente") {
+            this.$router.push("/dashboard-docentes");
+          }
+>>>>>>> parent of 9dbd3cc (avance 4):educabot/educabot-frontend/src/components/LoginComponent.vue
         } else {
-          alert(data.mensaje || "Error al iniciar sesión");
+          this.error = data.mensaje || "Error en la autenticación.";
         }
       } catch (error) {
-        alert("Error en el servidor: " + error.message);
+        console.error("Error al iniciar sesión:", error);
+        this.error = "Error del servidor.";
       }
     },
   },

@@ -9,7 +9,7 @@ class Asistencia(db.Model):
     fecha = db.Column(db.Date, nullable=False)             # Fecha de la asistencia
     presente = db.Column(db.Boolean, default=False)        # Si estuvo presente o no
 
-    def __init__(self, estudiante_id, materia, fecha, presente):
+    def __init__(self, estudiante_id, materia, fecha, presente=False):
         self.estudiante_id = estudiante_id
         self.materia = materia
         self.fecha = fecha

@@ -45,4 +45,16 @@ def obtener_usuario(id):
     if not usuario:
         return jsonify({"mensaje": "Usuario no encontrado"}), 404
 
+<<<<<<< HEAD
+    return jsonify({"id": usuario.id, "nombre": usuario.nombre, "email": usuario.email, "rol": usuario.rol}), 200
+
+# Listar todos los usuarios (requiere autenticación)
+@user_bp.route('/api/usuarios/listar', methods=['GET'])
+@jwt_required()
+def listar_usuarios():
+    usuarios = Usuario.query.all()
+    result = [{"id": u.id, "nombre": u.nombre, "rol": u.rol} for u in usuarios]
+    return jsonify(result), 200
+=======
     return jsonify({"id": usuario.id, "nombre": usuario.nombre, "email": usuario.email}), 200
+>>>>>>> parent of 9dbd3cc (avance 4)

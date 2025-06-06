@@ -1,87 +1,115 @@
 Código Base de Datos (PostgreSQL)
 
--- Crear la tabla usuario
+
+-- Tabla principal de usuarios
 CREATE TABLE usuario (
     id_usuario SERIAL PRIMARY KEY,
     nombre VARCHAR(40) NOT NULL,
     email VARCHAR(60) NOT NULL,
-    password VARCHAR(100) NOT NULL, -- Hash de la contraseña
+    password VARCHAR(100) NOT NULL,
     rol VARCHAR(40) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Fecha de creación
-    CONSTRAINT unique_email UNIQUE (email) -- Índice único para el correo
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_email UNIQUE (email)
 );
 
-
--- Crear la tabla Estudiante
-CREATE TABLE Estudiante (
+-- Tabla Estudiante (relacionada con usuario)
+CREATE TABLE estudiante (
     id_estudiante SERIAL PRIMARY KEY,
     grado_actual INTEGER NOT NULL,
-    celular_representante INTEGER
+    celular_representante VARCHAR(20),
+    id_usuario INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
--- Crear la tabla Docente
-CREATE TABLE Docente (
+-- Tabla Docente (relacionada con usuario)
+CREATE TABLE docente (
     id_docente SERIAL PRIMARY KEY,
-    especialidad VARCHAR(40) NOT NULL
+    especialidad VARCHAR(40) NOT NULL,
+    id_usuario INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
--- Crear la tabla Curso
-CREATE TABLE Curso (
+-- Tabla Curso
+CREATE TABLE curso (
     id_curso SERIAL PRIMARY KEY,
     nombre VARCHAR(40) NOT NULL,
-    descripcion VARCHAR(60)
+    id_docente INTEGER NOT NULL,
+    FOREIGN KEY (id_docente) REFERENCES docente(id_docente)
 );
 
--- Crear la tabla Matricula (relación entre Estudiante y Curso)
-CREATE TABLE Matricula (
-    id_matricula SERIAL PRIMARY KEY,
-    id_estudiante INTEGER NOT NULL,
-    id_curso INTEGER NOT NULL,
-    fecha_matricula DATE NOT NULL,
-    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante),
-    FOREIGN KEY (id_curso) REFERENCES Curso(id_curso)
-);
-
--- Crear la tabla Asignatura
-CREATE TABLE Asignatura (
+-- Tabla de asignaturas/materias
+CREATE TABLE asignatura (
     id_asignatura SERIAL PRIMARY KEY,
     nombre VARCHAR(40) NOT NULL,
     descripcion VARCHAR(60)
 );
 
--- Crear la tabla Tarea
-CREATE TABLE Tarea (
-    id_tarea SERIAL PRIMARY KEY,
+-- Relación Curso ↔ Asignatura (una materia puede estar en varios cursos)
+CREATE TABLE curso_asignatura (
+    id SERIAL PRIMARY KEY,
+    id_curso INTEGER NOT NULL,
     id_asignatura INTEGER NOT NULL,
-    titulo VARCHAR(40) NOT NULL,
-    descripcion VARCHAR(60),
-    fecha_entrega DATE NOT NULL,
-    FOREIGN KEY (id_asignatura) REFERENCES Asignatura(id_asignatura)
+    FOREIGN KEY (id_curso) REFERENCES curso(id_curso),
+    FOREIGN KEY (id_asignatura) REFERENCES asignatura(id_asignatura)
 );
 
--- Crear la tabla Asistencia
-CREATE TABLE Asistencia (
+-- Matriculación estudiante-curso
+CREATE TABLE matricula (
+    id_matricula SERIAL PRIMARY KEY,
+    id_estudiante INTEGER NOT NULL,
+    id_curso INTEGER NOT NULL,
+    fecha_matricula DATE NOT NULL,
+    FOREIGN KEY (id_estudiante) REFERENCES estudiante(id_estudiante),
+    FOREIGN KEY (id_curso) REFERENCES curso(id_curso)
+);
+
+-- Tabla Tareas
+CREATE TABLE tarea (
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255),
+    fecha_vencimiento DATE NOT NULL,
+    estudiante_id INTEGER NOT NULL,
+    id_materia INTEGER,
+    FOREIGN KEY (estudiante_id) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_materia) REFERENCES curso(id_curso)
+);
+
+-- Tabla Asistencia
+CREATE TABLE asistencia (
     id_asistencia SERIAL PRIMARY KEY,
     id_estudiante INTEGER NOT NULL,
     fecha DATE NOT NULL,
     estado VARCHAR(40) NOT NULL,
-    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante)
+    FOREIGN KEY (id_estudiante) REFERENCES estudiante(id_estudiante)
 );
 
--- Crear la tabla Calificacion
-CREATE TABLE Calificacion (
+-- Tabla Calificación
+CREATE TABLE calificacion (
     id_calificacion SERIAL PRIMARY KEY,
     id_estudiante INTEGER NOT NULL,
     id_asignatura INTEGER NOT NULL,
     nota VARCHAR(10) NOT NULL,
     fecha DATE NOT NULL,
-    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante),
-    FOREIGN KEY (id_asignatura) REFERENCES Asignatura(id_asignatura)
+    FOREIGN KEY (id_estudiante) REFERENCES estudiante(id_estudiante),
+    FOREIGN KEY (id_asignatura) REFERENCES asignatura(id_asignatura)
 );
 
--- Crear la tabla Chatbot
-CREATE TABLE Chatbot (
+-- Tabla de respuestas automáticas del chatbot
+CREATE TABLE chatbot (
     id_chatbot SERIAL PRIMARY KEY,
     pregunta VARCHAR(50) NOT NULL,
     respuesta VARCHAR(80) NOT NULL
 );
+
+-- Tabla para entrega de tareas por estudiantes
+CREATE TABLE entregas_tareas (
+    id_entrega SERIAL PRIMARY KEY,
+    id_tarea INTEGER NOT NULL,
+    id_estudiante INTEGER NOT NULL,
+    archivo TEXT,
+    fecha_entrega TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_tarea) REFERENCES tarea(id),
+    FOREIGN KEY (id_estudiante) REFERENCES estudiante(id_estudiante)
+);
+

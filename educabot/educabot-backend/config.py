@@ -4,10 +4,10 @@ class Config:
     # Configuración de la base de datos
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:admin2024@localhost:5432/bd_educabot'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+
     # Configuración de JWT
     JWT_SECRET_KEY = 'clave_secreta'
-    
+
     # Configuración de CORS
     CORS_ORIGINS = 'http://localhost:8080'
 
